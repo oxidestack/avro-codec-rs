@@ -1,0 +1,196 @@
+# Schema.Parser edge cases: syntax, comments, dangling content, names, namespaces, redefinition, defaults.
+<EMPTY>	ERR SchemaParseException: Cannot parse <null> schema
+   
+"int" x	ERR SchemaParseException: dangling content after end of schema: x
+"int"garbage	ERR SchemaParseException: dangling content after end of schema: garbage
+{"type":"int"}  // c	ERR SchemaParseException: dangling content after end of schema: // c
+{"type":"int"} /* c */	ERR SchemaParseException: dangling content after end of schema: /* c */
+/* c */ "int"	OK "int"
+{"type": /* c */ "int"}	OK "int"
+{"type":"int" // c	ERR SchemaParseException: com.fasterxml.jackson.core.io.JsonEOFException: Unexpected end-of-input: expected close marker for Object (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 19]
+}	ERR SchemaParseException: com.fasterxml.jackson.core.JsonParseException: Unexpected close marker '}': no open Object to close\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
+"int" /* unterminated	ERR SchemaParseException: dangling content after end of schema: /* unterminated
+/* unterminated	ERR SchemaParseException: com.fasterxml.jackson.core.io.JsonEOFException: Unexpected end-of-input in a comment\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 16]
+{"type": /* unterminated	ERR SchemaParseException: com.fasterxml.jackson.core.io.JsonEOFException: Unexpected end-of-input in a comment\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 25]
+{"type":"int",	ERR SchemaParseException: com.fasterxml.jackson.core.JsonParseException: Unexpected end-of-input within/between Object entries\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 15]
+{"type":"int"}}	ERR SchemaParseException: dangling content after end of schema: }
+"string"	OK "string"
+"foo"	ERR NullPointerException: Unknown schema: org.apache.avro.compiler.UnresolvedSchema_0
+"ns.foo"	ERR NullPointerException: Unknown schema: org.apache.avro.compiler.UnresolvedSchema_1
+{"type":"string","avro.java.string":"String"}	OK {"type":"string","avro.java.string":"String"}
+{"type":"int","logicalType":"date"}	OK {"type":"int","logicalType":"date"}
+{"type":"bytes","logicalType":"decimal","precision":4,"scale":2}	OK {"type":"bytes","logicalType":"decimal","precision":4,"scale":2}
+{"type":"bytes","logicalType":"decimal","precision":-1}	OK {"type":"bytes","logicalType":"decimal","precision":-1}
+{"type":{"type":"string"}}	ERR SchemaParseException: No type: {"type":{"type":"string"}}
+{"type":["int","null"]}	ERR SchemaParseException: No type: {"type":["int","null"]}
+{"type":5}	ERR SchemaParseException: No type: {"type":5}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":{"type":"int"}}}]}	ERR SchemaParseException: No type: {"type":{"type":"int"}}
+{"type":"foo"}	ERR SchemaParseException: A schema "type" MUST be a primitive type or one of "enum", "fixed", "record", "error", "array" or "map".
+{"type":"R"}	ERR SchemaParseException: A schema "type" MUST be a primitive type or one of "enum", "fixed", "record", "error", "array" or "map".
+{"namespace":"tests","type":"record","name":"Invalid","fields":[{"name":"good","type":{"type":"fixed","name":"Hash","size":16}},{"name":"right","type":{"type":"Hash"}}]}	ERR SchemaParseException: A schema "type" MUST be a primitive type or one of "enum", "fixed", "record", "error", "array" or "map".
+5	ERR SchemaParseException: Schema not yet supported: 5
+true	ERR SchemaParseException: Schema not yet supported: true
+null	ERR SchemaParseException: Schema not yet supported: null
+[]	OK []
+["null"]	OK ["null"]
+["int","long","string"]	OK ["int","long","string"]
+["int","int"]	ERR AvroRuntimeException: Duplicate in union:int
+[["int"]]	ERR AvroRuntimeException: Nested union: [["int"]]
+["int",["long"]]	ERR AvroRuntimeException: Nested union: ["int",["long"]]
+[{"type":"array","items":"int"},{"type":"array","items":"long"}]	ERR AvroRuntimeException: Duplicate in union:array
+[{"type":"map","values":"int"},"string"]	OK [{"type":"map","values":"int"},"string"]
+{"type":"record","name":"R","fields":[]}	OK {"type":"record","name":"R","fields":[]}
+{"type":"error","name":"E","fields":[]}	OK {"type":"error","name":"E","fields":[]}
+{"type":"record","name":"R","fields":{}}	ERR SchemaParseException: Record has no fields: {"type":"record","name":"R","fields":{}}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"a","type":"long"}]}	ERR AvroRuntimeException: Duplicate field a in record R: a type:LONG pos:1 and a type:INT pos:0.
+{"type":"record","name":"ns.R","fields":[{"name":"a","type":"int"},{"name":"a","type":"long"}]}	ERR AvroRuntimeException: Duplicate field a in record ns.R: a type:LONG pos:1 and a type:INT pos:0.
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"a","type":"long"},{"name":"b","type":"nope"}]}	ERR AvroRuntimeException: Duplicate field a in record R: a type:LONG pos:1 and a type:INT pos:0.
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"a","type":"long"},{"name":"b","type":{"type":"nope"}}]}	ERR SchemaParseException: A schema "type" MUST be a primitive type or one of "enum", "fixed", "record", "error", "array" or "map".
+{"type":"record","name":"R","fields":[{"name":"1a","type":"int"}]}	ERR SchemaParseException: Illegal initial character: 1a
+{"type":"record","name":"R","fields":[{"name":"1a","type":{"type":"nope"}}]}	ERR SchemaParseException: A schema "type" MUST be a primitive type or one of "enum", "fixed", "record", "error", "array" or "map".
+{"type":"record","name":"R","fields":[{"name":"a b","type":"int"}]}	ERR SchemaParseException: Illegal character in: a b
+{"type":"record","name":"R","fields":[{"type":"int"}]}	ERR SchemaParseException: No field name: {"type":"int"}
+{"type":"record","name":"R","fields":[{"name":5,"type":"int"}]}	ERR SchemaParseException: No field name: {"name":5,"type":"int"}
+{"type":"record","name":5,"fields":[]}	ERR SchemaParseException: No name in schema: {"type":"record","name":5,"fields":[]}
+{"type":"record","name":"","fields":[]}	ERR SchemaParseException: Empty name
+{"type":"record","name":"1R","fields":[]}	ERR SchemaParseException: Illegal initial character: 1R
+{"type":"record","name":"R-1","fields":[]}	ERR SchemaParseException: Illegal character in: R-1
+{"type":"record","name":"a.1b.R","fields":[]}	ERR SchemaParseException: Namespace part "1b" is invalid: Illegal initial character: 1b
+{"type":"record","name":"R","namespace":"a.1b","fields":[]}	ERR SchemaParseException: Namespace part "1b" is invalid: Illegal initial character: 1b
+{"type":"record","name":"R","namespace":"a..b","fields":[]}	ERR SchemaParseException: Namespace part "" is invalid: Empty name
+{"type":"record","name":"R","namespace":"a.b.","fields":[]}	ERR SchemaParseException: Namespace part "" is invalid: Empty name
+{"type":"record","name":"R","namespace":".a","fields":[]}	ERR SchemaParseException: Namespace part "" is invalid: Empty name
+{"type":"record","name":"R","namespace":"","fields":[]}	OK {"type":"record","name":"R","fields":[]}
+{"type":"record","name":"R","namespace":5,"fields":[]}	OK {"type":"record","name":"R","fields":[]}
+{"type":"record","name":".R","fields":[]}	OK {"type":"record","name":"R","fields":[]}
+{"type":"record","name":"R.","fields":[]}	ERR SchemaParseException: Empty name
+{"type":"record","name":"int","fields":[]}	ERR AvroTypeException: Schemas may not be named after primitives: int
+{"type":"record","name":"ns.int","fields":[{"name":"value","type":"int"},{"name":"next","type":["null","ns.int"]}]}	OK {"type":"record","name":"int","namespace":"ns","fields":[{"name":"value","type":"int"},{"name":"next","type":["null","ns.int"]}]}
+{"type":"record","name":"int","namespace":"ns","fields":[]}	OK {"type":"record","name":"int","namespace":"ns","fields":[]}
+{"type":"record","name":"string","fields":[{"name":"x","type":"int"}]}	ERR AvroTypeException: Schemas may not be named after primitives: string
+{"type":"enum","name":"int","symbols":[]}	ERR AvroTypeException: Schemas may not be named after primitives: int
+{"type":"fixed","name":"long","size":1}	ERR AvroTypeException: Schemas may not be named after primitives: long
+{"type":"record","name":"R","doc":"d","fields":[{"name":"a","type":"int","doc":"fd"}]}	OK {"type":"record","name":"R","doc":"d","fields":[{"name":"a","type":"int","doc":"fd"}]}
+{"type":"record","name":"R","doc":5,"fields":[]}	OK {"type":"record","name":"R","fields":[]}
+{"type":"record","name":"R","fields":[],"foo":"bar","n":1,"o":{"x":[1,2.5,null]}}	OK {"type":"record","name":"R","fields":[],"foo":"bar","n":1,"o":{"x":[1,2.5,null]}}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","foo":"bar","order":"descending"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"int","order":"descending","foo":"bar"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","order":"IGNORE"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"int","order":"ignore"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","order":"Ascending"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","order":5}]}	ERR NullPointerException: Cannot invoke "String.toUpperCase(java.util.Locale)" because the return value of "com.fasterxml.jackson.databind.JsonNode.textValue()" is null
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","order":"up"}]}	ERR IllegalArgumentException: No enum constant org.apache.avro.Schema.Field.Order.UP
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","order":null}]}	ERR NullPointerException: Cannot invoke "String.toUpperCase(java.util.Locale)" because the return value of "com.fasterxml.jackson.databind.JsonNode.textValue()" is null
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["b","c","b"]}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["b","c"]}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":"b"}]}	ERR SchemaParseException: aliases not an array: {"name":"a","type":"int","aliases":"b"}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":[5]}]}	ERR SchemaParseException: alias not a string: 5
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["1-bad"]}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["1-bad"]}]}
+{"type":"record","name":"R","aliases":["A","x.B","A"],"fields":[]}	OK {"type":"record","name":"R","fields":[],"aliases":["A","x.B"]}
+{"type":"record","name":"R","namespace":"ns","aliases":["A","x.B","ns.C"],"fields":[]}	OK {"type":"record","name":"R","namespace":"ns","fields":[],"aliases":["A","x.B","C"]}
+{"type":"record","name":"R","aliases":["1A"],"fields":[]}	ERR SchemaParseException: Illegal initial character: 1A
+{"type":"record","name":"R","aliases":{"a":1},"fields":[]}	ERR SchemaParseException: aliases not an array: {"type":"record","name":"R","aliases":{"a":1},"fields":[]}
+{"type":"record","name":"R","aliases":[1],"fields":[]}	ERR SchemaParseException: alias not a string: 1
+{"type":"enum","name":"E","symbols":["A","B"],"aliases":["F"],"doc":"d","default":"A","x":1}	OK {"type":"enum","name":"E","doc":"d","symbols":["A","B"],"default":"A","x":1,"aliases":["F"]}
+{"type":"enum","name":"E","symbols":["A","B"],"default":"C"}	ERR SchemaParseException: The Enum Default: C is not in the enum symbol set: [A, B]
+{"type":"enum","name":"E","symbols":["A","B"],"default":5}	OK {"type":"enum","name":"E","symbols":["A","B"]}
+{"type":"enum","name":"E","symbols":["A","A"]}	ERR SchemaParseException: Duplicate enum symbol: A
+{"type":"enum","name":"E","symbols":["A",5]}	ERR SchemaParseException: Null name
+{"type":"enum","name":"E","symbols":["A",null]}	ERR SchemaParseException: Null name
+{"type":"enum","name":"E","symbols":["1A"]}	ERR SchemaParseException: Illegal initial character: 1A
+{"type":"enum","name":"E","symbols":[""]}	ERR SchemaParseException: Empty name
+{"type":"enum","name":"E","symbols":[]}	OK {"type":"enum","name":"E","symbols":[]}
+{"type":"enum","name":"E","symbols":"A"}	ERR SchemaParseException: Enum has no symbols: {"type":"enum","name":"E","symbols":"A"}
+{"type":"enum","symbols":["A"]}	ERR SchemaParseException: No name in schema: {"type":"enum","symbols":["A"]}
+{"type":"fixed","name":"F","size":16,"doc":"d","aliases":["G"],"x":true}	OK {"type":"fixed","name":"F","doc":"d","size":16,"x":true,"aliases":["G"]}
+{"type":"fixed","name":"F","size":-1}	ERR AvroRuntimeException: Malformed data. Length is negative: -1
+{"type":"fixed","name":"F","size":2147483647}	ERR UnsupportedOperationException: Cannot read arrays longer than 2147483639 bytes in Java library
+{"type":"fixed","name":"F","size":2147483640}	ERR UnsupportedOperationException: Cannot read arrays longer than 2147483639 bytes in Java library
+{"type":"fixed","name":"F","size":"4"}	ERR SchemaParseException: Invalid or no size: {"type":"fixed","name":"F","size":"4"}
+{"type":"fixed","name":"F","size":4.0}	ERR SchemaParseException: Invalid or no size: {"type":"fixed","name":"F","size":4.0}
+{"type":"fixed","name":"F","size":4000000000}	ERR SchemaParseException: Invalid or no size: {"type":"fixed","name":"F","size":4000000000}
+{"type":"fixed","size":4}	ERR SchemaParseException: No name in schema: {"type":"fixed","size":4}
+{"type":"array"}	ERR SchemaParseException: Array has no items type: {"type":"array"}
+{"type":"array","items":"int","x":1}	OK {"type":"array","items":"int","x":1}
+{"type":"array","items":"nope"}	ERR AvroTypeException: Undefined schema: nope
+{"type":"map"}	ERR SchemaParseException: Map has no values type: {"type":"map"}
+{"type":"map","values":"int","x":1}	OK {"type":"map","values":"int","x":1}
+{"type":"map","values":"nope"}	ERR AvroTypeException: Undefined schema: nope
+{"type":"record","name":"R","fields":[{"name":"a","type":"R"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"R"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":["null","R"]}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":["null","R"]}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"S"},{"name":"b","type":{"type":"enum","name":"S","symbols":["X"]}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"S","symbols":["X"]}},{"name":"b","type":"S"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"S"},{"name":"b","type":"T"}]}	ERR AvroTypeException: Undefined schema: S
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"S","fields":[{"name":"x","type":"U"}]}},{"name":"b","type":"T"}]}	ERR AvroTypeException: Undefined schema: U
+["A","B"]	ERR AvroTypeException: Undefined schema: B
+[{"type":"record","name":"A","fields":[{"name":"x","type":"B"}]},"C"]	ERR AvroTypeException: Undefined schema: B
+{"type":"record","name":"R","fields":[{"name":"a","type":["S",{"type":"record","name":"S","fields":[]}]}]}	ERR AvroRuntimeException: Duplicate in union:S
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"]}},{"name":"b","type":{"type":"enum","name":"E","symbols":["A"]}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"]}},{"name":"b","type":"E"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"]}},{"name":"b","type":{"type":"enum","name":"E","symbols":["B"]}}]}	ERR SchemaParseException: Can't redefine: E
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"],"doc":"x"}},{"name":"b","type":{"type":"enum","name":"E","symbols":["A"],"doc":"y"}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","doc":"x","symbols":["A"]}},{"name":"b","type":"E"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"],"p":1}},{"name":"b","type":{"type":"enum","name":"E","symbols":["A"],"p":2}}]}	ERR SchemaParseException: Can't redefine: E
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"R","fields":[]}}]}	ERR SchemaParseException: Can't redefine: R
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"fixed","name":"F","size":1}},{"name":"b","type":{"type":"fixed","name":"F","size":1}},{"name":"c","type":"F"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"fixed","name":"F","size":1}},{"name":"b","type":"F"},{"name":"c","type":"F"}]}
+{"type":"record","name":"Main","fields":[{"name":"f1","type":"Sub"},{"name":"f2","type":{"type":"enum","name":"Sub","symbols":["OPEN","CLOSE"]}}]}	OK {"type":"record","name":"Main","fields":[{"name":"f1","type":{"type":"enum","name":"Sub","symbols":["OPEN","CLOSE"]}},{"name":"f2","type":"Sub"}]}
+{"type":"record","name":"Lisp","fields":[{"name":"value","type":["null","string",{"type":"record","name":"Cons","fields":[{"name":"car","type":"Lisp"},{"name":"cdr","type":"Lisp"}]}]}]}	OK {"type":"record","name":"Lisp","fields":[{"name":"value","type":["null","string",{"type":"record","name":"Cons","fields":[{"name":"car","type":"Lisp"},{"name":"cdr","type":"Lisp"}]}]}]}
+{"type":"record","name":"TestRecord","fields":[{"name":"value","type":{"type":"record","name":"Container","fields":[{"name":"Optional","type":{"type":"array","items":[{"type":"record","name":"optional_field_0","namespace":"","doc":"","fields":[{"name":"optional_field_1","type":"long","doc":"","default":0}]}]}}]}}]}	OK {"type":"record","name":"TestRecord","fields":[{"name":"value","type":{"type":"record","name":"Container","fields":[{"name":"Optional","type":{"type":"array","items":[{"type":"record","name":"optional_field_0","doc":"","fields":[{"name":"optional_field_1","type":"long","doc":"","default":0}]}]}}]}}]}
+{"type":"record","name":"a.R","fields":[{"name":"b","type":{"type":"record","name":"S","fields":[]}},{"name":"c","type":"S"},{"name":"d","type":"a.S"}]}	OK {"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"record","name":"S","fields":[]}},{"name":"c","type":"S"},{"name":"d","type":"S"}]}
+{"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"record","name":"S","namespace":"x","fields":[{"name":"t","type":{"type":"record","name":"T","fields":[]}}]}},{"name":"c","type":"x.T"},{"name":"d","type":"T"}]}	ERR AvroTypeException: Undefined schema: a.T
+{"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"record","name":"S","namespace":"","fields":[{"name":"t","type":{"type":"record","name":"T","fields":[]}}]}},{"name":"c","type":"T"}]}	OK {"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"record","name":"S","namespace":"","fields":[{"name":"t","type":{"type":"record","name":"T","fields":[]}}]}},{"name":"c","type":"T"}]}
+{"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"record","name":"record","fields":[]}},{"name":"c","type":"a.record"}]}	OK {"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"record","name":"record","fields":[]}},{"name":"c","type":"a.record"}]}
+{"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"enum","name":"E","symbols":["X"],"aliases":["F","b.G"]}}]}	OK {"type":"record","name":"R","namespace":"a","fields":[{"name":"b","type":{"type":"enum","name":"E","symbols":["X"],"aliases":["F","b.G"]}}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","default":1}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"int","default":1}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","default":"1"}]}	ERR AvroTypeException: Invalid default for field a: "1" not a "int"
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","default":1.0}]}	ERR AvroTypeException: Invalid default for field a: 1.0 not a "int"
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","default":2147483648}]}	ERR AvroTypeException: Invalid default for field a: 2147483648 not a "int"
+{"type":"record","name":"R","fields":[{"name":"a","type":"long","default":2147483648}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"long","default":2147483648}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"long","default":9223372036854775808}]}	ERR AvroTypeException: Invalid default for field a: 9223372036854775808 not a "long"
+{"type":"record","name":"R","fields":[{"name":"a","type":"long","default":1.0}]}	ERR AvroTypeException: Invalid default for field a: 1.0 not a "long"
+{"type":"record","name":"R","fields":[{"name":"a","type":"float","default":1}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"float","default":1}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"float","default":"1.5"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"float","default":1.5}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"double","default":"NaN"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"double","default":"NaN"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"double","default":"abc"}]}	ERR NumberFormatException: For input string: "abc"
+{"type":"record","name":"R","fields":[{"name":"a","type":"double","default":""}]}	ERR NumberFormatException: empty String
+{"type":"record","name":"R","fields":[{"name":"a","type":"double","default":" 1.5d "}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"double","default":1.5}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"double","default":"0x1.8p1"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"double","default":3.0}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"double","default":"1e400"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"double","default":"Infinity"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"double","default":true}]}	ERR AvroTypeException: Invalid default for field a: true not a "double"
+{"type":"record","name":"R","fields":[{"name":"a","type":"boolean","default":true}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"boolean","default":true}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"boolean","default":"true"}]}	ERR AvroTypeException: Invalid default for field a: "true" not a "boolean"
+{"type":"record","name":"R","fields":[{"name":"a","type":"null","default":null}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"null","default":null}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"null","default":0}]}	ERR AvroTypeException: Invalid default for field a: 0 not a "null"
+{"type":"record","name":"R","fields":[{"name":"a","type":"string","default":"x"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"string","default":"x"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"string","default":null}]}	ERR AvroTypeException: Invalid default for field a: null not a "string"
+{"type":"record","name":"R","fields":[{"name":"a","type":"bytes","default":"ÿ"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"bytes","default":"ÿ"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":["null","string"],"default":null}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":["null","string"],"default":null}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":["null","string"],"default":"x"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":["null","string"],"default":"x"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":["string","null"],"default":5}]}	ERR AvroTypeException: Invalid default for field a: 5 not a ["string","null"]
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"array","items":"string"},"default":["a",5]}]}	ERR AvroTypeException: Invalid default for field a: ["a",5] not a {"type":"array","items":"string"}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"array","items":"string"},"default":[]}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"array","items":"string"},"default":[]}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"map","values":"int"},"default":{"x":1}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"map","values":"int"},"default":{"x":1}}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"map","values":"int"},"default":{"x":"1"}}]}	ERR AvroTypeException: Invalid default for field a: {"x":"1"} not a {"type":"map","values":"int"}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"]},"default":"Z"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"]},"default":"Z"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"enum","name":"E","symbols":["A"]},"default":1}]}	ERR AvroTypeException: Invalid default for field a: 1 not a {"type":"enum","name":"E","symbols":["A"]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"fixed","name":"F","size":2},"default":"abc"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"fixed","name":"F","size":2},"default":"abc"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int"}]},"default":{"x":1}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int"}]},"default":{"x":1}}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int"}]},"default":{}}]}	ERR AvroTypeException: Invalid default for field a: {} not a {"type":"record","name":"S","fields":[{"name":"x","type":"int"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int","default":3}]},"default":{}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int","default":3}]},"default":{}}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int"}]},"default":{"x":"q"}}]}	ERR AvroTypeException: Invalid default for field a: {"x":"q"} not a {"type":"record","name":"S","fields":[{"name":"x","type":"int"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"S","default":{}},{"name":"b","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int"}]}}]}	ERR AvroTypeException: Invalid default for field a: {} not a {"type":"record","name":"S","fields":[{"name":"x","type":"int"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"S","default":5},{"name":"b","type":{"type":"record","name":"S","fields":[{"name":"x","type":"int"}]}}]}	ERR AvroTypeException: Invalid default for field a: 5 not a {"type":"record","name":"UnresolvedSchema_23","namespace":"org.apache.avro.compiler","doc":"unresolved schema","fields":[],"org.apache.avro.idl.unresolved.name":"S"}
+{"type":"record","name":"R","fields":[{"name":"a","type":"S","default":"A"},{"name":"b","type":{"type":"enum","name":"S","symbols":["A"]}}]}	ERR AvroTypeException: Invalid default for field a: "A" not a {"type":"record","name":"UnresolvedSchema_24","namespace":"org.apache.avro.compiler","doc":"unresolved schema","fields":[],"org.apache.avro.idl.unresolved.name":"S"}
+{"type":"record","name":"R","fields":[{"name":"a","type":"S","default":{}},{"name":"b","type":{"type":"enum","name":"S","symbols":["A"]}}]}	ERR AvroTypeException: Invalid default for field a: {} not a {"type":"enum","name":"S","symbols":["A"]}
+{"type":"record","name":"R","fields":[{"name":"a","type":["null","S"],"default":null},{"name":"b","type":{"type":"record","name":"S","fields":[]}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":["null",{"type":"record","name":"S","fields":[]}],"default":null},{"name":"b","type":"S"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"string","default":"x"}],"default":5}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"string","default":"x"}],"default":5}
+{"type":"record","name":"héllo","fields":[{"name":"ünï","type":"int"}]}	OK {"type":"record","name":"héllo","fields":[{"name":"ünï","type":"int"}]}
+{"type":"record","name":"R","fields":[{"name":"aⅠ","type":"int"}]}	ERR SchemaParseException: Illegal character in: aⅠ
+{"type":"record","name":"R","fields":[{"name":"a\u0000","type":"int"}]}	ERR SchemaParseException: Illegal character in: a 
+{"type":"record","name":"R\"q","fields":[]}	ERR SchemaParseException: Illegal character in: R"q
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","default":1,"doc":"x\ny\"z"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"int","doc":"x\ny\"z","default":1}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}],"name":"S"}	OK {"type":"record","name":"S","fields":[{"name":"a","type":"int"}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","type":"long"}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":"long"}]}
+{"type":"record" , "name" : "R" , "fields" : [ ]  }  	OK {"type":"record","name":"R","fields":[]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"array","items":{"type":"record","name":"R2","fields":[{"name":"x","type":"R"}]}}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"array","items":{"type":"record","name":"R2","fields":[{"name":"x","type":"R"}]}}}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"map","values":"R"}}]}	OK {"type":"record","name":"R","fields":[{"name":"a","type":{"type":"map","values":"R"}}]}
+{"type":"record","name":"R","fields":[{"name":"a","type":{"type":"array","items":"Nope"}}]}	ERR AvroTypeException: Undefined schema: Nope
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"R"}]}}	OK {"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"R"}]}}
+{"type":"map","values":"Undefined"}	ERR AvroTypeException: Undefined schema: Undefined
+[{"type":"record","name":"A","fields":[]},"A"]	ERR AvroRuntimeException: Duplicate in union:A
+[{"type":"record","name":"A","fields":[]},{"type":"record","name":"A","fields":[]}]	ERR AvroRuntimeException: Duplicate in union:A
+[{"type":"record","name":"A","fields":[]},{"type":"record","name":"A","fields":[{"name":"x","type":"int"}]}]	ERR SchemaParseException: Can't redefine: A

@@ -1,0 +1,30 @@
+[package]
+name = "avro-codec-rs"
+version = "0.1.0"
+edition = "2024"
+description = "Unofficial Rust port of the parts of Apache Avro 1.12.2 (Java) that a JSON-to-binary codec reaches: the schema parser, JsonDecoder and JsonEncoder, the binary encoding, byte for byte"
+license = "Apache-2.0"
+repository = "https://github.com/oxidestack/avro-codec-rs"
+homepage = "https://oxidestack.github.io/avro-codec-rs/"
+documentation = "https://docs.rs/avro-codec-rs"
+rust-version = "1.87"
+readme = "README.md"
+keywords = ["avro", "json", "codec", "binary", "port"]
+categories = ["encoding", "parsing"]
+# What crates.io gets: the library, its licence and notice, the README and the changelog. The pinned
+# upstream sources, the tests and their recorded vectors, the tools, the docs and the site stay in the
+# repository.
+include = ["/src/**", "/LICENSE", "/NOTICE", "/README.md", "/CHANGELOG.md"]
+
+[lib]
+name = "avro"
+
+[package.metadata.port]
+upstream = "Apache Avro (Java)"
+version = "1.12.2"
+license = "Apache-2.0"
+
+[dependencies]
+jackson = { package = "jackson-rs", path = "../swagger-parser-rs/crates/jackson", version = "0.1.0" }
+java-compat = { package = "java-compat-rs", path = "../java-compat-rs", version = "0.1.0" }
+unicode-general-category = "1.1.0"

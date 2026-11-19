@@ -1,0 +1,133 @@
+# BinaryDecoder through GenericDatumReader (fast reader), then GenericDatumWriter to JsonEncoder.
+"int"	HEX:	ERR EOFException: null
+"int"	HEX:00	BIN 0
+"int"	HEX:02	BIN 1
+"int"	HEX:01	BIN -1
+"int"	HEX:7f	BIN -64
+"int"	HEX:8001	BIN 64
+"int"	HEX:80	ERR EOFException: null
+"int"	HEX:ffffffff0f	BIN -2147483648
+"int"	HEX:feffffff0f	BIN 2147483647
+"int"	HEX:ffffffff7f	BIN -2147483648
+"int"	HEX:ffffffffff	ERR InvalidNumberEncodingException: Invalid int encoding
+"int"	HEX:ffffffffff01	ERR InvalidNumberEncodingException: Invalid int encoding
+"int"	HEX:0001	BIN 0
+"long"	HEX:	ERR EOFException: null
+"long"	HEX:feffffffffffffffff01	BIN 9223372036854775807
+"long"	HEX:ffffffffffffffffff01	BIN -9223372036854775808
+"long"	HEX:ffffffffffffffffff7f	BIN -9223372036854775808
+"long"	HEX:ffffffffffffffffffff	ERR InvalidNumberEncodingException: Invalid long encoding
+"long"	HEX:ffffffffffffffffff	ERR EOFException: null
+"long"	HEX:808080808080808080808001	ERR InvalidNumberEncodingException: Invalid long encoding
+"boolean"	HEX:	ERR EOFException: null
+"boolean"	HEX:00	BIN false
+"boolean"	HEX:01	BIN true
+"boolean"	HEX:02	BIN false
+"boolean"	HEX:ff	BIN false
+"float"	HEX:0000c07f	BIN "NaN"
+"float"	HEX:0000807f	BIN "Infinity"
+"float"	HEX:000080ff	BIN "-Infinity"
+"float"	HEX:01000000	BIN 1.4E-45
+"float"	HEX:cdcccc3d	BIN 0.1
+"float"	HEX:000000	ERR EOFException: null
+"float"	HEX:	ERR EOFException: null
+"float"	HEX:00000080	BIN -0.0
+"double"	HEX:000000000000f87f	BIN "NaN"
+"double"	HEX:000000000000f07f	BIN "Infinity"
+"double"	HEX:9a9999999999b93f	BIN 0.1
+"double"	HEX:0100000000000000	BIN 4.9E-324
+"double"	HEX:00000000000000	ERR EOFException: null
+"double"	HEX:0000000000000080	BIN -0.0
+"string"	HEX:	ERR EOFException: null
+"string"	HEX:00	BIN ""
+"string"	HEX:0661626	ERR EOFException: Attempted to read 3 bytes, but only 2 bytes are available
+"string"	HEX:06616263	BIN "abc"
+"string"	HEX:0a41	ERR EOFException: Attempted to read 5 bytes, but only 1 bytes are available
+"string"	HEX:03	ERR AvroRuntimeException: Malformed data. Length is negative: -2
+"string"	HEX:02	ERR EOFException: Attempted to read 1 bytes, but only 0 bytes are available
+"string"	HEX:04c328	BIN "�("
+"string"	HEX:02ff	BIN "�"
+"string"	HEX:08f09f9880	BIN "\uD83D\uDE00"
+"string"	HEX:06eda080	BIN "�"
+"string"	HEX:02000a	BIN "\u0000"
+"string"	HEX:0822090a	ERR EOFException: Attempted to read 4 bytes, but only 3 bytes are available
+"string"	HEX:feffffff0f	ERR UnsupportedOperationException: Cannot read strings longer than 2147483639 bytes
+"string"	HEX:ffffffff0f	ERR AvroRuntimeException: Malformed data. Length is negative: -2147483648
+"string"	HEX:8080808010	ERR UnsupportedOperationException: Cannot read strings longer than 2147483639 bytes
+"string"	HEX:02e2	BIN "�"
+"string"	HEX:02c0	BIN "�"
+"bytes"	HEX:04ff00	BIN "ÿ\u0000"
+"bytes"	HEX:00	BIN ""
+"bytes"	HEX:05	ERR AvroRuntimeException: Malformed data. Length is negative: -3
+"bytes"	HEX:0a41	ERR EOFException: Attempted to read 5 bytes, but only 1 bytes are available
+"bytes"	HEX:ffffffff0f	ERR AvroRuntimeException: Malformed data. Length is negative: -2147483648
+{"type":"enum","name":"E","symbols":["A","B"]}	HEX:00	BIN "A"
+{"type":"enum","name":"E","symbols":["A","B"]}	HEX:02	BIN "B"
+{"type":"enum","name":"E","symbols":["A","B"]}	HEX:04	ERR AvroTypeException: Enumeration out of range: must be in [0, 2), but received 2
+{"type":"enum","name":"E","symbols":["A","B"]}	HEX:01	ERR AvroTypeException: Enumeration out of range: must be in [0, 2), but received -1
+{"type":"enum","name":"E","symbols":["A","B"]}	HEX:	ERR EOFException: null
+{"type":"enum","name":"E","symbols":["A","B"]}	HEX:ffffffff0f	ERR AvroTypeException: Enumeration out of range: must be in [0, 2), but received -2147483648
+{"type":"fixed","name":"F","size":4}	HEX:61626364	BIN "abcd"
+{"type":"fixed","name":"F","size":4}	HEX:616263	ERR EOFException: null
+{"type":"fixed","name":"F","size":4}	HEX:ff00ff00	BIN "ÿ\u0000ÿ\u0000"
+{"type":"fixed","name":"F","size":4}	HEX:	ERR EOFException: null
+["null","int"]	HEX:00	BIN null
+["null","int"]	HEX:0202	BIN {"int":1}
+["null","int"]	HEX:0400	ERR AvroTypeException: Union branch index out of range: must be in [0, 2), but received 2
+["null","int"]	HEX:06	ERR AvroTypeException: Union branch index out of range: must be in [0, 2), but received 3
+["null","int"]	HEX:01	ERR AvroTypeException: Union branch index out of range: must be in [0, 2), but received -1
+["null","int"]	HEX:ffffffff0f	ERR AvroTypeException: Union branch index out of range: must be in [0, 2), but received -2147483648
+["null","int"]	HEX:	ERR EOFException: null
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"string"}]}	HEX:0206616263	BIN {"a":1,"b":"abc"}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"string"}]}	HEX:02	ERR EOFException: null
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"string"}]}	HEX:020661626300ff	BIN {"a":1,"b":"abc"}
+{"type":"array","items":"int"}	HEX:00	BIN []
+{"type":"array","items":"int"}	HEX:0600	ERR EOFException: Collection claims 3 elements with at least 1 bytes each, but only 1 bytes are available
+{"type":"array","items":"int"}	HEX:06020406	ERR EOFException: null
+{"type":"array","items":"int"}	HEX:0602040600	BIN [1,2,3]
+{"type":"array","items":"int"}	HEX:0302040600	BIN [2,3]
+{"type":"array","items":"int"}	HEX:05020406	ERR EOFException: Collection claims 3 elements with at least 1 bytes each, but only 2 bytes are available
+{"type":"array","items":"int"}	HEX:050602040600	BIN [1,2,3]
+{"type":"array","items":"int"}	HEX:0a	ERR EOFException: Collection claims 5 elements with at least 1 bytes each, but only 0 bytes are available
+{"type":"array","items":"int"}	HEX:0a02	ERR EOFException: Collection claims 5 elements with at least 1 bytes each, but only 1 bytes are available
+{"type":"array","items":"int"}	HEX:ffffffff0f	ERR EOFException: null
+{"type":"array","items":"int"}	HEX:feffffff0f	ERR UnsupportedOperationException: Cannot read collections larger than 2147483639 items in Java library
+{"type":"array","items":"int"}	HEX:808080808080808080808001	ERR InvalidNumberEncodingException: Invalid long encoding
+{"type":"array","items":"int"}	HEX:8080808080808080800100	ERR UnsupportedOperationException: Cannot read collections larger than 2147483639 items in Java library
+{"type":"array","items":"int"}	HEX:02020202	ERR EOFException: null
+{"type":"array","items":"int"}	HEX:0402	ERR EOFException: Collection claims 2 elements with at least 1 bytes each, but only 1 bytes are available
+{"type":"array","items":"null"}	HEX:0a	ERR EOFException: null
+{"type":"array","items":"null"}	HEX:02	ERR EOFException: null
+{"type":"array","items":"null"}	HEX:ffffffff0f	ERR EOFException: null
+{"type":"array","items":"null"}	HEX:feffffff0f	ERR UnsupportedOperationException: Cannot read collections larger than 2147483639 items in Java library
+{"type":"array","items":"null"}	HEX:8080808010	ERR UnsupportedOperationException: Cannot read collections larger than 2147483639 items in Java library
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"n","type":"null"}]}}	HEX:0a	ERR EOFException: null
+{"type":"array","items":{"type":"record","name":"R","fields":[]}}	HEX:0a	ERR EOFException: null
+{"type":"array","items":{"type":"record","name":"R","fields":[]}}	HEX:02	ERR EOFException: null
+{"type":"array","items":"double"}	HEX:0a	ERR EOFException: Collection claims 5 elements with at least 8 bytes each, but only 0 bytes are available
+{"type":"array","items":"double"}	HEX:0a0202	ERR EOFException: Collection claims 5 elements with at least 8 bytes each, but only 2 bytes are available
+{"type":"array","items":{"type":"fixed","name":"F","size":3}}	HEX:0a	ERR EOFException: Collection claims 5 elements with at least 3 bytes each, but only 0 bytes are available
+{"type":"array","items":{"type":"fixed","name":"F","size":3}}	HEX:0a0202	ERR EOFException: Collection claims 5 elements with at least 3 bytes each, but only 2 bytes are available
+{"type":"map","values":"int"}	HEX:00	BIN {}
+{"type":"map","values":"int"}	HEX:02026102	ERR EOFException: null
+{"type":"map","values":"int"}	HEX:0402610202620400	BIN {"a":1,"b":2}
+{"type":"map","values":"int"}	HEX:04026102026104	ERR EOFException: null
+{"type":"map","values":"int"}	HEX:0402610202610400	BIN {"a":2}
+{"type":"map","values":"int"}	HEX:0a	ERR EOFException: null
+{"type":"map","values":"int"}	HEX:ffffffff0f	ERR EOFException: null
+{"type":"map","values":"int"}	HEX:1c046b3102046b3204046b3306046b3408046b350a046b360c046b370e046b3810046b3912066b313014066b313116066b313218066b31331a066b31341c00	BIN {"k1":1,"k2":2,"k11":11,"k3":3,"k12":12,"k4":4,"k5":5,"k10":10,"k6":6,"k7":7,"k8":8,"k13":13,"k9":9,"k14":14}
+{"type":"map","values":"int"}	HEX:0404416102044242040008f09f98800600	BIN {"Aa":1,"BB":2}
+{"type":"map","values":"int","avro.java.string":"String"}	HEX:0404416102044242040008f09f98800600	BIN {"Aa":1,"BB":2}
+{"type":"map","values":"int","avro.java.string":"String"}	HEX:0402ff0202fe0400	BIN {"�":2}
+{"type":"record","name":"L","fields":[{"name":"next","type":["null","L"]}]}	HEX:00	BIN {"next":null}
+{"type":"record","name":"L","fields":[{"name":"next","type":["null","L"]}]}	HEX:0200	BIN {"next":{"L":{"next":null}}}
+{"type":"record","name":"L","fields":[{"name":"next","type":["null","L"]}]}	HEX:02020200	BIN {"next":{"L":{"next":{"L":{"next":{"L":{"next":null}}}}}}}
+{"type":"record","name":"L","fields":[{"name":"next","type":["null","L"]}]}	HEX:020202020202020200	BIN {"next":{"L":{"next":{"L":{"next":{"L":{"next":{"L":{"next":{"L":{"next":{"L":{"next":{"L":{"next":{"L":{"next":null}}}}}}}}}}}}}}}}}
+{"type":"record","name":"L","fields":[{"name":"next","type":["null","L"]}]}	HEX:0202	ERR EOFException: null
+{"type":"record","name":"R","fields":[]}	HEX:	BIN 
+{"type":"record","name":"R","fields":[]}	HEX:0102	BIN 
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[]}}]}	HEX:	BIN 
+[{"type":"record","name":"R","fields":[]}]	HEX:00	BIN {"R":{}}
+{"type":"array","items":{"type":"record","name":"R","fields":[]}}	HEX:0400	BIN [{},{}]
+"null"	HEX:	BIN null
+"null"	HEX:0102	BIN null

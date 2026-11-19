@@ -1,0 +1,220 @@
+# JsonDecoder through GenericDatumReader (fast reader), then GenericDatumWriter to binary and back to JSON.
+"int"	1	02 1
+"int"	-1	01 -1
+"int"	0	00 0
+"int"	-0	00 0
+"int"	2147483647	feffffff0f 2147483647
+"int"	2147483648	ERR InputCoercionException: Numeric value (2147483648) out of range of int (-2147483648 - 2147483647)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 11]
+"int"	-2147483649	ERR InputCoercionException: Numeric value (-2147483649) out of range of int (-2147483648 - 2147483647)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 12]
+"int"	1.0	02 1
+"int"	1.5	ERR AvroTypeException: Expected int. Got VALUE_NUMBER_FLOAT
+"int"	-0.0	00 0
+"int"	16777217.0	80808010 16777216
+"int"	2147483647.0	feffffff0f 2147483647
+"int"	3e9	ERR AvroTypeException: Expected int. Got VALUE_NUMBER_FLOAT
+"int"	1e-45	00 0
+"int"	1E2	c801 100
+"int"	"1"	ERR AvroTypeException: Expected int. Got VALUE_STRING
+"int"	true	ERR AvroTypeException: Expected int. Got VALUE_TRUE
+"int"	null	ERR AvroTypeException: Expected int. Got VALUE_NULL
+"int"		ERR EOFException: null
+"int"	 	ERR EOFException: null
+"int"	1 2	02 1
+"int"	1 x	ERR JsonParseException: Unrecognized token 'x': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]
+"int"	1x	ERR JsonParseException: Unexpected character ('x' (code 120)): Expected space separating root-level values\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+"int"	1 ]	ERR JsonParseException: Unexpected close marker ']': no open Array to close\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]
+"int"	1,	ERR JsonParseException: Unexpected character (',' (code 44)): Expected space separating root-level values\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+"int"	[1]	ERR AvroTypeException: Expected int. Got START_ARRAY
+"int"	01	ERR JsonParseException: Invalid numeric value: Leading zeroes not allowed\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+"int"	-	ERR JsonEOFException: Unexpected end-of-inputNo digit following sign\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+"int"	1.	ERR JsonParseException: Unexpected character ('.' (code 46)) in numeric value: Decimal point not followed by a digit\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+"int"	1e	ERR JsonEOFException: Unexpected end-of-inputexpected a digit for number exponent\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]
+"int"	.5	ERR JsonParseException: Unexpected character ('.' (code 46)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
+"int"	+1	ERR JsonParseException: Unexpected character ('+' (code 43)) in numeric value: JSON spec does not allow numbers to have plus signs: enable `JsonReadFeature.ALLOW_LEADING_PLUS_SIGN_FOR_NUMBERS` to allow\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+"int"	NaN	ERR JsonParseException: Non-standard token 'NaN': enable `JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS` to allow\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 4]
+"int"	"NaN"	ERR AvroTypeException: Expected int. Got VALUE_STRING
+"long"	9223372036854775807	feffffffffffffffff01 9223372036854775807
+"long"	9223372036854775808	ERR InputCoercionException: Numeric value (9223372036854775808) out of range of long (-9223372036854775808 - 9223372036854775807)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 20]
+"long"	-9223372036854775809	ERR InputCoercionException: Numeric value (-9223372036854775809) out of range of long (-9223372036854775808 - 9223372036854775807)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 21]
+"long"	9.223372036854775807E18	feffffffffffffffff01 9223372036854775807
+"long"	1e19	ERR AvroTypeException: Expected long. Got VALUE_NUMBER_FLOAT
+"long"	1.0	02 1
+"long"	1.5	ERR AvroTypeException: Expected long. Got VALUE_NUMBER_FLOAT
+"long"	123456789012345678901234567890	ERR InputCoercionException: Numeric value (123456789012345678901234567890) out of range of long (-9223372036854775808 - 9223372036854775807)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 31]
+"float"	1	0000803f 1.0
+"float"	1.5	0000c03f 1.5
+"float"	16777217	0000804b 1.6777216E7
+"float"	1e40	0000807f "Infinity"
+"float"	1e-50	00000000 0.0
+"float"	"NaN"	0000c07f "NaN"
+"float"	"Infinity"	0000807f "Infinity"
+"float"	"-Infinity"	000080ff "-Infinity"
+"float"	"INF"	0000807f "Infinity"
+"float"	"-INF"	000080ff "-Infinity"
+"float"	"inf"	ERR AvroTypeException: Expected float. Got null
+"float"	"1.5"	ERR AvroTypeException: Expected float. Got null
+"float"	true	ERR AvroTypeException: Expected float. Got VALUE_TRUE
+"float"	3.4028235E38	ffff7f7f 3.4028235E38
+"float"	0.1	cdcccc3d 0.1
+"double"	1	000000000000f03f 1.0
+"double"	1.5	000000000000f83f 1.5
+"double"	1e400	000000000000f07f "Infinity"
+"double"	-1e400	000000000000f0ff "-Infinity"
+"double"	4.9e-324	0100000000000000 4.9E-324
+"double"	"NaN"	000000000000f87f "NaN"
+"double"	"Infinity"	000000000000f07f "Infinity"
+"double"	"-INF"	000000000000f0ff "-Infinity"
+"double"	"x"	ERR AvroTypeException: Expected double. Got null
+"double"	0.1	9a9999999999b93f 0.1
+"double"	123456789012345678901234567890	3e376cff90eef845 1.2345678901234568E29
+"double"	1.7976931348623157E308	ffffffffffffef7f 1.7976931348623157E308
+"double"	2.2250738585072014E-308	0000000000001000 2.2250738585072014E-308
+"boolean"	true	01 true
+"boolean"	false	00 false
+"boolean"	1	ERR AvroTypeException: Expected boolean. Got VALUE_NUMBER_INT
+"boolean"	"true"	ERR AvroTypeException: Expected boolean. Got VALUE_STRING
+"boolean"	null	ERR AvroTypeException: Expected boolean. Got VALUE_NULL
+"boolean"	tru	ERR JsonParseException: Unrecognized token 'tru': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
+"boolean"	truex	ERR JsonParseException: Unrecognized token 'truex': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
+"boolean"	nul	ERR JsonParseException: Unrecognized token 'nul': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
+"null"	null	 null
+"null"	0	ERR AvroTypeException: Expected null. Got VALUE_NUMBER_INT
+"null"	"null"	ERR AvroTypeException: Expected null. Got VALUE_STRING
+"null"	nullx	ERR JsonParseException: Unrecognized token 'nullx': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1]
+"string"	"abc"	06616263 "abc"
+"string"	""	00 ""
+"string"	"é"	04c3a9 "é"
+"string"	"😀"	08f09f9880 "\uD83D\uDE00"
+"string"	"\ud800"	023f "?"
+"string"	"\udc00x"	043f78 "?x"
+"string"	"a\/b"	06612f62 "a/b"
+"string"	"\b\f\n\r\t"	0a080c0a0d09 "\b\f\n\r\t"
+"string"	"\x"	ERR JsonParseException: Unrecognized character escape 'x' (code 120)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 3]
+"string"	"\u12"	ERR JsonParseException: Unexpected character ('"' (code 34)): expected a hex-digit for character escape sequence\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 6]
+"string"	"unterminated	ERR JsonEOFException: Unexpected end-of-input: was expecting closing quote for a string value\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 14]
+"string"	5	ERR AvroTypeException: Expected string. Got VALUE_NUMBER_INT
+"string"	null	ERR AvroTypeException: Expected string. Got VALUE_NULL
+"string"	"é😀"	0cc3a9f09f9880 "é\uD83D\uDE00"
+"string"	"a\u0000b"	06610062 "a\u0000b"
+"string"	"	ERR JsonEOFException: Unexpected end-of-input: was expecting closing quote for a string value\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+"bytes"	"abc"	06616263 "abc"
+"bytes"	"ÿ\u0000"	04ff00 "ÿ\u0000"
+"bytes"	"Ā"	023f "?"
+"bytes"	"😀"	023f "?"
+"bytes"	"\ud800"	023f "?"
+"bytes"	5	ERR AvroTypeException: Expected bytes. Got VALUE_NUMBER_INT
+{"type":"fixed","name":"F","size":2}	"ab"	6162 "ab"
+{"type":"fixed","name":"F","size":2}	"a"	ERR AvroTypeException: Expected fixed length 2, but got1
+{"type":"fixed","name":"F","size":2}	"abc"	ERR AvroTypeException: Expected fixed length 2, but got3
+{"type":"fixed","name":"F","size":2}	"ÿþ"	fffe "ÿþ"
+{"type":"fixed","name":"F","size":2}	"é"	ERR AvroTypeException: Expected fixed length 2, but got1
+{"type":"fixed","name":"F","size":2}	"😀"	ERR AvroTypeException: Expected fixed length 2, but got1
+{"type":"fixed","name":"F","size":2}	5	ERR AvroTypeException: Expected fixed. Got VALUE_NUMBER_INT
+{"type":"fixed","name":"F","size":2}	null	ERR AvroTypeException: Expected fixed. Got VALUE_NULL
+{"type":"enum","name":"E","symbols":["A","B"]}	"A"	00 "A"
+{"type":"enum","name":"E","symbols":["A","B"]}	"B"	02 "B"
+{"type":"enum","name":"E","symbols":["A","B"]}	"C"	ERR AvroTypeException: Unknown symbol in enum C
+{"type":"enum","name":"E","symbols":["A","B"]}	5	ERR AvroTypeException: Expected fixed. Got VALUE_NUMBER_INT
+{"type":"enum","name":"E","symbols":["A","B"]}	null	ERR AvroTypeException: Expected fixed. Got VALUE_NULL
+{"type":"enum","name":"E","symbols":["A","B"]}	"a"	ERR AvroTypeException: Unknown symbol in enum a
+["int","string"]	{"int":1}	0002 {"int":1}
+["int","string"]	{"string":"x"}	020278 {"string":"x"}
+["int","string"]	{"long":1}	ERR AvroTypeException: Unknown union branch long
+["int","string"]	null	ERR AvroTypeException: Unknown union branch null
+["int","string"]	1	ERR AvroTypeException: Expected start-union. Got VALUE_NUMBER_INT
+["int","string"]	{}	ERR AvroTypeException: Expected start-union. Got END_OBJECT
+["int","string"]	{"int":1,"extra":2}	0002 {"int":1}
+["int","string"]	{"int":1,"extra":{"q":1}}	0002 {"int":1}
+["int","string"]	{"int":"x"}	ERR AvroTypeException: Expected int. Got VALUE_STRING
+["int","string"]	[1]	ERR AvroTypeException: Expected start-union. Got START_ARRAY
+["int","string"]	"x"	ERR AvroTypeException: Expected start-union. Got VALUE_STRING
+["int","string"]	{"int":1}}	0002 {"int":1}
+["null","int","string"]	null	00 null
+["null","int","string"]	{"null":null}	00 null
+["null","int","string"]	{"int":1}	0202 {"int":1}
+["null","int","string"]	{"string":"a"}	040261 {"string":"a"}
+["null","int","string"]	{"R":{"a":1}}	ERR AvroTypeException: Unknown union branch R
+["null",{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}]	null	00 null
+["null",{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}]	{"R":{"a":1}}	0202 {"R":{"a":1}}
+["null",{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}]	{"R":{"a":1,"x":2}}	0202 {"R":{"a":1}}
+["null",{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}]	{"R":{"x":2,"a":1}}	0202 {"R":{"a":1}}
+["null",{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}]	{"R":{"x":{},"a":1}}	0202 {"R":{"a":1}}
+["null",{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}]	{"R":null}	ERR AvroTypeException: Expected record-start. Got VALUE_NULL
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1}	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"x":1,"a":2}	04 {"a":2}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":2,"x":{"q":1}}	04 {"a":2}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"x":1,"x":2,"a":3}	06 {"a":3}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{}	ERR AvroTypeException: Expected int. Got END_OBJECT
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"b":1}	ERR AvroTypeException: Expected field name not found: a
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1,"a":2}	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":"1"}	ERR AvroTypeException: Expected int. Got VALUE_STRING
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	[]	ERR AvroTypeException: Expected record-start. Got START_ARRAY
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	5	ERR AvroTypeException: Expected record-start. Got VALUE_NUMBER_INT
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1,"b":	ERR JsonEOFException: Unexpected end-of-input within/between Object entries\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 12]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1,"b":]}	ERR JsonParseException: Unexpected character (']' (code 93)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 12]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1,"b":"\x"}	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1}garbage	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1} x	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1,"b"}	ERR JsonParseException: Unexpected character ('}' (code 125)): was expecting a colon to separate field name and value\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 11]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a" 1}	ERR JsonParseException: Unexpected character ('1' (code 49)): was expecting a colon to separate field name and value\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 6]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":1,}	ERR JsonParseException: Unexpected character ('}' (code 125)): was expecting double-quote to start field name\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 8]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{a:1}	ERR JsonParseException: Unexpected character ('a' (code 97)): was expecting double-quote to start field name\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{'a':1}	ERR JsonParseException: Unexpected character (''' (code 39)): was expecting double-quote to start field name\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 2]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"a":3000000000}	ERR InputCoercionException: Numeric value (3000000000) out of range of int (-2147483648 - 2147483647)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 16]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}	{"x":"\q","a":1}	ERR JsonParseException: Unrecognized character escape 'q' (code 113)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 8]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"a":1,"b":2}	0204 {"a":1,"b":2}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"b":2,"a":1}	0204 {"a":1,"b":2}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"b":3000000000,"a":1}	ERR InputCoercionException: Numeric value (3000000000) out of range of int (-2147483648 - 2147483647)\n at [Source: UNKNOWN; byte offset: #UNKNOWN]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"a":3000000000,"b":1}	ERR InputCoercionException: Numeric value (3000000000) out of range of int (-2147483648 - 2147483647)\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 16]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"b":1.0,"a":1}	0202 {"a":1,"b":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"a":1,"b":1, "c": ]}	ERR JsonParseException: Unexpected character (']' (code 93)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 20]
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"b":2}	ERR AvroTypeException: Expected field name not found: a
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"a":1}	ERR AvroTypeException: Expected int. Got END_OBJECT
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"c":1,"b":2,"a":1}	0204 {"a":1,"b":2}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"b":[1,2],"a":1}	ERR AvroTypeException: Expected int. Got START_ARRAY
+{"type":"record","name":"R","fields":[{"name":"a","type":"int"},{"name":"b","type":"int"}]}	{"b":{"x":[1,{"y":2}]},"a":1}	ERR AvroTypeException: Expected int. Got START_OBJECT
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"r":{"a":1},"z":3}	0206 {"r":{"a":1},"z":3}
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"z":3,"r":{"a":1}}	0206 {"r":{"a":1},"z":3}
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"r":{"x":1,"a":2},"z":3}	ERR AvroTypeException: Expected Unknown fields: [x]. Got END_OBJECT
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"r":{"a":2,"x":{"q":1},"y":5},"z":3}	ERR AvroTypeException: Expected field name not found: z
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"r":{"a":2,"x":5},"z":3}	0406 {"r":{"a":2},"z":3}
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"r":{"x":1,"y":2,"a":2},"z":3}	ERR AvroTypeException: Expected Unknown fields: [x, y]. Got END_OBJECT
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"r":{"yy":1,"xx":2,"Aa":3,"BB":4,"a":2},"z":3}	ERR AvroTypeException: Expected Unknown fields: [yy, xx, Aa, BB]. Got END_OBJECT
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}},{"name":"z","type":"int"}]}	{"r":{"a":2},"q":1,"z":3}	0406 {"r":{"a":2},"z":3}
+{"type":"record","name":"O","fields":[{"name":"z","type":"int"},{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}]}	{"z":3,"r":{"x":1,"a":2}}	0604 {"z":3,"r":{"a":2}}
+{"type":"record","name":"O","fields":[{"name":"z","type":"int"},{"name":"r","type":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}]}	{"z":3,"r":{"a":2,"x":{"q":{}}}}	0604 {"z":3,"r":{"a":2}}
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	[]	00 []
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	[{"a":1},{"a":2}]	04020400 [{"a":1},{"a":2}]
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	[{"x":1,"a":1}]	ERR AvroTypeException: Expected Unknown fields: [x]. Got END_OBJECT
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	[{"a":1,"x":1}]	020200 [{"a":1}]
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	[1]	ERR AvroTypeException: Expected record-start. Got VALUE_NUMBER_INT
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	[{"a":1},]	ERR JsonParseException: Unexpected character (']' (code 93)): expected a valid value (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 10]
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	{"a":1}	ERR AvroTypeException: Expected array-start. Got START_OBJECT
+{"type":"array","items":{"type":"record","name":"R","fields":[{"name":"a","type":"int"}]}}	[{"a":1}	ERR JsonEOFException: Unexpected end-of-input: expected close marker for Array (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 9]
+{"type":"map","values":"int"}	{}	00 {}
+{"type":"map","values":"int"}	{"a":1}	0202610200 {"a":1}
+{"type":"map","values":"int"}	{"b":2,"a":1}	0402610202620400 {"a":1,"b":2}
+{"type":"map","values":"int"}	{"a":1,"a":2}	0202610400 {"a":2}
+{"type":"map","values":"int"}	{"a":"x"}	ERR AvroTypeException: Expected int. Got VALUE_STRING
+{"type":"map","values":"int"}	[]	ERR AvroTypeException: Expected map-start. Got START_ARRAY
+{"type":"map","values":"int"}	{"a":1	ERR JsonEOFException: Unexpected end-of-input: expected close marker for Object (start marker at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 1])\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 7]
+{"type":"map","values":"int"}	{"k1":1,"k2":2,"k3":3,"k4":4,"k5":5,"k6":6,"k7":7,"k8":8,"k9":9,"k10":10,"k11":11,"k12":12,"k13":13,"k14":14}	1c046b3102046b3204066b313116046b3306066b313218046b3408046b350a066b313014046b360c046b370e046b3810066b31331a046b3912066b31341c00 {"k1":1,"k2":2,"k11":11,"k3":3,"k12":12,"k4":4,"k5":5,"k10":10,"k6":6,"k7":7,"k8":8,"k13":13,"k9":9,"k14":14}
+{"type":"map","values":"int"}	{"Aa":1,"BB":2,"é":3,"😀":4}	08044161020442420404c3a90608f09f98800800 {"Aa":1,"BB":2,"é":3,"\uD83D\uDE00":4}
+{"type":"map","values":"int"}	{"\ud800":1,"\ud801":2}	02023f0400 {"?":2}
+{"type":"map","values":"int","avro.java.string":"String"}	{"Aa":1,"BB":2,"é":3,"😀":4}	08044161020442420408f09f98800804c3a90600 {"Aa":1,"BB":2,"\uD83D\uDE00":4,"é":3}
+{"type":"map","values":"int","avro.java.string":"String"}	{"\ud800":1,"\ud801":2}	04023f02023f0400 {"?":2}
+{"type":"map","values":"int","avro.java.string":"String"}	{"k1":1,"k2":2,"k3":3,"k4":4,"k5":5,"k6":6,"k7":7,"k8":8,"k9":9,"k10":10,"k11":11,"k12":12,"k13":13}	1a046b3102046b3204046b3306046b3408046b350a066b313116046b360c066b313014046b370e066b31331a046b3810066b313218046b391200 {"k1":1,"k2":2,"k3":3,"k4":4,"k5":5,"k11":11,"k6":6,"k10":10,"k7":7,"k13":13,"k8":8,"k12":12,"k9":9}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["x"]}]}	{"a":1}	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["x"]}]}	{"x":1}	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["x"]}]}	{"x":1,"a":2}	02 {"a":1}
+{"type":"record","name":"R","fields":[{"name":"a","type":"int","aliases":["x"]}]}	{"a":1,"x":2}	02 {"a":1}
+{"type":"record","name":"L","fields":[{"name":"v","type":"int"},{"name":"next","type":["null","L"]}]}	{"v":1,"next":null}	0200 {"v":1,"next":null}
+{"type":"record","name":"L","fields":[{"name":"v","type":"int"},{"name":"next","type":["null","L"]}]}	{"v":1,"next":{"L":{"v":2,"next":null}}}	02020400 {"v":1,"next":{"L":{"v":2,"next":null}}}
+{"type":"record","name":"L","fields":[{"name":"v","type":"int"},{"name":"next","type":["null","L"]}]}	{"next":{"L":{"next":null,"v":2}},"v":1}	02020400 {"v":1,"next":{"L":{"v":2,"next":null}}}
+{"type":"array","items":"null"}	[null,null]	0400 [null,null]
+{"type":"array","items":"int"}	[1,2,3]	0602040600 [1,2,3]
+{"type":"array","items":"int"}	[1 2]	ERR JsonParseException: Unexpected character ('2' (code 50)): was expecting comma to separate Array entries\n at [Source: REDACTED (`StreamReadFeature.INCLUDE_SOURCE_IN_LOCATION` disabled); line: 1, column: 4]
+{"type":"array","items":{"type":"array","items":"int"}}	[[1],[],[2,3]]	06020200000404060000 [[1],[],[2,3]]
+{"type":"record","name":"R","fields":[]}	{}	 
+{"type":"record","name":"R","fields":[]}	{"a":1}	 
+{"type":"record","name":"O","fields":[{"name":"r","type":{"type":"record","name":"R","fields":[]}},{"name":"z","type":"int"}]}	{"r":{"a":1},"z":2}	04 {"r":{},"z":2}

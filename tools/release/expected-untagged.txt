@@ -1,0 +1,26 @@
+## [0.1.0] - YYYY-MM-DD
+
+### Action required
+
+- `strict_mode` is no longer read. A configuration that sets it sets `strict` to the same value instead. (c4a4e55)
+
+### Features
+
+- Input may come from any `std::io::Read`. (74100dd)
+- The `trim` option drops trailing whitespace from the output. (schema, 5b61efc)
+
+### Bug fixes
+
+- An error raised in a nested call names the position of the call, so a caller finds it. (1258cce)
+- Input that is not UTF-8 returns an error instead of a panic. (29c3564)
+- An error names the line of the input, as the Java library does. (ee4889e)
+
+### Performance
+
+- An input used twice is parsed once, so using it again is faster. (dcc9fdb)
+
+### Other changes
+
+- The README lists every option with its default. (4853db1)
+
+[0.1.0]: https://github.com/oxidestack/avro-codec-rs/releases/tag/v0.1.0

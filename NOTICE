@@ -1,0 +1,14 @@
+avro-codec-rs
+Copyright 2026 The avro-codec-rs authors
+
+This product is an unofficial Rust port of the parts of Apache Avro 1.12.2 (https://avro.apache.org/,
+https://github.com/apache/avro) that a JSON-to-binary codec reaches: the schema parser, JsonDecoder and JsonEncoder and
+the binary encoding. Apache Avro is Copyright The Apache Software Foundation and licensed under the Apache License,
+Version 2.0. The ported behaviour, exception texts and the test inputs taken from it remain under that license;
+`upstream/` pins the ported release as a submodule, with its own LICENSE.txt and NOTICE.txt.
+
+This product includes software developed at The Apache Software Foundation (https://www.apache.org/).
+
+The expected outputs under tests/vectors/ were recorded from the real Apache Avro 1.12.2 Java library (Apache-2.0) by
+scripts/record.sh. "Apache", "Apache Avro" and the Apache feather are trademarks of the Apache Software Foundation;
+this project is not affiliated with or endorsed by it.

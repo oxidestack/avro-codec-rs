@@ -1,0 +1,34 @@
+# More JSON: named union branches, numbers as JsonEncoder prints them.
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"ns.R":{"a":1}}	0202 {"ns.R":{"a":1}}
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"R":{"a":1}}	ERR AvroTypeException: Unknown union branch R
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"ns.E":"X"}	0400 {"ns.E":"X"}
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"F":"a"}	0661 {"F":"a"}
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"map":{"k":1}}	0802026b0200 {"map":{"k":1}}
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"array":[1]}	0a020200 {"array":[1]}
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"bytes":"\u0000\u001f"}	0c04001f {"bytes":"\u0000\u001F"}
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	null	00 null
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"ns.R":{"a":1},"x":1}	0202 {"ns.R":{"a":1}}
+["null",{"type":"record","name":"R","namespace":"ns","fields":[{"name":"a","type":"int"}]},{"type":"enum","name":"E","namespace":"ns","symbols":["X"]},{"type":"fixed","name":"F","size":1},{"type":"map","values":"int"},{"type":"array","items":"int"},"bytes"]	{"map":{}}	0800 {"map":{}}
+"float"	1e-5	acc52737 1.0E-5
+"double"	1e-5	f168e388b5f8e43e 1.0E-5
+"float"	1e21	27d75862 1.0E21
+"double"	1e21	50efe2d6e41a4b44 1.0E21
+"float"	123456789	a379eb4c 1.2345679E8
+"double"	123456789	00000054346f9d41 1.23456789E8
+"float"	0.1	cdcccc3d 0.1
+"double"	0.1	9a9999999999b93f 0.1
+"float"	1.0E-45	01000000 1.4E-45
+"double"	1.0E-45	b96a37ad01d69636 1.0E-45
+"float"	-0.0	00000080 -0.0
+"double"	-0.0	0000000000000080 -0.0
+"float"	3.4028235E38	ffff7f7f 3.4028235E38
+"double"	3.4028235E38	f8af4de5ffffef47 3.4028235E38
+"float"	1e7	8096184b 1.0E7
+"double"	1e7	00000000d0126341 1.0E7
+"float"	1e-3	6f12833a 0.001
+"double"	1e-3	fca9f1d24d62503f 0.001
+"float"	0.001	6f12833a 0.001
+"double"	0.001	fca9f1d24d62503f 0.001
+"float"	1234567.0	38b49649 1234567.0
+"double"	1234567.0	0000000087d63241 1234567.0
+{"type":"record","name":"R","fields":[{"name":"s","type":"string"},{"name":"b","type":"bytes"}]}	{"s":"\"\\/\b\f\n\r\t\u0001\u007f ","b":"\u0080ÿ"}	1a225c2f080c0a0d09017fe280a80480ff {"s":"\"\\/\b\f\n\r\t\u0001 ","b":"ÿ"}
