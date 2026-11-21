@@ -104,7 +104,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           persist-credentials: false
-          submodules: false
+          submodules: recursive  # the tests read upstream's schemas, as ci.yml's do
       # The JDK semantics and the Jackson reader this crate builds on, sibling checkouts (Cargo.toml's `../java-compat-rs`,
       # `../swagger-parser-rs/crates/jackson`).
       - run: git clone --depth 1 https://github.com/oxidestack/java-compat-rs.git ../java-compat-rs
